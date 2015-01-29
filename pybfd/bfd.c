@@ -596,6 +596,8 @@ pybfd_get_sections_list(PyObject *self, PyObject *args) {
                 return NULL;
 
             for (section = abfd->sections; section; section = section->next) {
+                if (!section)
+			break;
                 PyList_SetItem(list, section->index, Py_BuildValue("n", section));
             }
 
@@ -1306,6 +1308,20 @@ static struct PyMethodDef _bfd_methods[] = {
 #undef declmethod
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef _bfd_module = {
+	PyModuleDef_HEAD_INIT,
+	"_bfd",					/* m_name */
+	"The binding for libBFD from binutils",	/* m_doc */
+	-1,					/* m_size */
+	_bfd_methods, 				/* m_methods */
+	NULL,					/* m_reload */
+	NULL,					/* m_traverse */
+	NULL,					/* m_clear */
+	NULL,					/* m_free */
+};
+#endif
+
 //
 // Name     : init_pybfd
 //
@@ -1315,10 +1331,33 @@ static struct PyMethodDef _bfd_methods[] = {
 //
 // Returns  : -
 //
-PyMODINIT_FUNC init_bfd(void) {
-    if (!Py_InitModule("_bfd", _bfd_methods))
+PyMODINIT_FUNC 
+#if PY_MAJOR_VERSION >= 3
+PyInit__bfd(void) {
+#else
+init_bfd(void) {
+#endif
+
+    PyObject *module = NULL;
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&_bfd_module);
+#else
+    module = Py_InitModule("_bfd", _bfd_methods);
+#endif
+    if (!module)
+    {
+#if PY_MAJOR_VERSION >= 3
+        return NULL;
+#else
         return;
+#endif
+    }
 
     // Initialize current library.
     initialize();
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#else
+    return;
+#endif
 }

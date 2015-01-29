@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 # Copyright (c) 2013 Groundworks Technologies
 # 
@@ -32,7 +32,7 @@ else:
 del version_info
 
 from bfd_archs import *
-from bfd_base import *
+from .bfd_base import *
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"
@@ -76,9 +76,9 @@ class Opcodes(object):
                 self.initialize_bfd(args[0])
             else:
                 self.initialize_non_bfd(*args)
-        except IndexError, err:
+        except IndexError as err:
             pass
-        except TypeError, err:
+        except TypeError as err:
             raise OpcodesException(err)
 
     def initialize_bfd(self, abfd):
@@ -134,8 +134,8 @@ class Opcodes(object):
         Callack on each disassembled instruction to print its information.
         
         """
-        print "0x%X SZ=%d BD=%d IT=%d\t%s" % \
-            (address, size, branch_delay_insn, insn_type, disassembly)
+        print("0x%X SZ=%d BD=%d IT=%d\t%s" % \
+            (address, size, branch_delay_insn, insn_type, disassembly))
 
         return PYBFD_DISASM_CONTINUE  # keep moving
 
@@ -201,14 +201,14 @@ def main():
         opcodes = Opcodes(target_arch, target_mach, target_endian)
 
         # Print some architecture-specific information.
-        print "\n[+] Architecture %s - Machine %d" % \
-            (opcodes.architecture_name, opcodes.machine)
+        print("\n[+] Architecture %s - Machine %d" % \
+            (opcodes.architecture_name, opcodes.machine))
 
-        print "[+] Disassembly:"
+        print("[+] Disassembly:")
 
         # Print all the disassembled instructions.
         for vma, size, disasm in opcodes.disassemble(binary, address):
-            print "0x%X (size=%d)\t %s" % (vma, size, disasm)
+            print("0x%X (size=%d)\t %s" % (vma, size, disasm))
 
 if __name__ == "__main__":
     main()

@@ -4,8 +4,7 @@
 # This code is part Python pybfd module (libbfd extension module)
 #
 
-from bfd_base import BfdException, enum
-import _bfd
+from .bfd_base import BfdException, enum
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"

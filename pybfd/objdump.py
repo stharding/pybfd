@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 # Copyright (c) 2013 Groundworks Technologies
 # 
@@ -9,12 +9,14 @@ from sys import argv, exit
 from argparse import ArgumentParser, FileType, REMAINDER, Action
 from textwrap import dedent
 
-import bfd
+from . import bfd
 from bfd_archs import *
-from bfd_base import *
-from opcodes import *
-from section import *
-from symbol import SYMBOL_FLAGS_NAMES_SHORT
+from .bfd_base import *
+from .opcodes import *
+from .section import *
+from .symbol import SYMBOL_FLAGS_NAMES_SHORT
+import six
+from six.moves import range
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"
@@ -46,13 +48,13 @@ class ListFormatAndArchitecturesInformationAction(BfdActionNoParam):
 
     def do_action(self, parser, namespace, values, option_string):
 
-        print "%s %s (%s)" % (parser.prog, __version__, __description__)
+        print("%s %s (%s)" % (parser.prog, __version__, __description__))
 
         for arch in self.bfd.architectures:
-            print " %s" % arch,
+            print(" %s" % arch, end=' ')
 
         for target in self.bfd.targets:
-            print "  %s" % target
+            print("  %s" % target)
 
 
 class BfdActionWithFileParam(Action):
@@ -67,8 +69,8 @@ class BfdActionWithFileParam(Action):
                 self.bfd = bfd.Bfd(fd)
 
                 # Display current filename and corresponding architecture.
-                print "\n%s:     file format %s\n" % \
-                    (self.bfd.filename, self.bfd.architecture)
+                print("\n%s:     file format %s\n" % \
+                    (self.bfd.filename, self.bfd.architecture))
 
                 # Process the BFD with the user-requested action.
                 self.do_action(parser, namespace, values, option_string)
@@ -78,9 +80,9 @@ class BfdActionWithFileParam(Action):
 
                 fd.close()
 
-            except BfdException, err:
-                print err
-            except Exception, err:
+            except BfdException as err:
+                print(err)
+            except Exception as err:
                 pass
 
         global done
@@ -101,10 +103,10 @@ class DumpFileHeadersAction(BfdActionWithFileParam):
 
         file_flags = self.bfd.file_flags & ~bfd.BFD_FLAGS_FOR_BFD_USE_MASK
 
-        print "architecture: %s:%s, flags 0x%08x:" % \
+        print("architecture: %s:%s, flags 0x%08x:" % \
             (self.bfd.printable_arch, self.bfd.printable_mach,
             #(self.bfd.printable_arch, self.bfd_printable_mach,
-            self.bfd.file_flags)
+            self.bfd.file_flags))
 
         #bfd_printable_arch_mach (
         #    bfd_get_arch (abfd), bfd_get_mach (abfd)));
@@ -113,9 +115,9 @@ class DumpFileHeadersAction(BfdActionWithFileParam):
         for flag in bfd.BFD_FLAGS:
             _flag = flag & file_flags
             if _flag != 0:
-                print "%s," % self.bfd.flag_name_shost(flag),
+                print("%s," % self.bfd.flag_name_shost(flag), end=' ')
 
-        print "\nstart address 0x%08x" % self.bfd.start_address
+        print("\nstart address 0x%08x" % self.bfd.start_address)
 
 
 class DumpSectionHeadersAction(BfdActionWithFileParam):
@@ -150,7 +152,7 @@ class DumpSectionHeadersAction(BfdActionWithFileParam):
                 section.alignment
                 )
 
-        print _str
+        print(_str)
 
 
 class DisassembleSectionAction(BfdActionWithFileParam):
@@ -175,10 +177,10 @@ class DisassembleSectionAction(BfdActionWithFileParam):
             #
             # Obtain the section content and request its disassembly.
             #
-            print "\nDisassembly of section %s\n" % section.name
+            print("\nDisassembly of section %s\n" % section.name)
             for vma, size, disasm in opcodes.disassemble(
                 section.content, section.vma):
-                print "%8x (%d)\t%s" % (vma, size, disasm)
+                print("%8x (%d)\t%s" % (vma, size, disasm))
 
 
 class DisassembleSectionsAction(BfdActionWithFileParam):
@@ -197,9 +199,9 @@ class DisassembleSectionsAction(BfdActionWithFileParam):
             #
             # Obtain the section content and request its disassembly.
             #
-            print "\nDisassembly of section %s\n" % section.name
+            print("\nDisassembly of section %s\n" % section.name)
             for vma, size, disasm in opcodes.disassemble(section.content, section.vma):
-                print "%8x (%d)\t%s" % (vma, size, disasm)
+                print("%8x (%d)\t%s" % (vma, size, disasm))
 
 
 class DumpSectionContentAction(BfdActionWithFileParam):
@@ -209,11 +211,11 @@ class DumpSectionContentAction(BfdActionWithFileParam):
         """Dump the specified buffer in hex + ASCII format."""
         FILTER = \
             "".join([(len(repr(chr(x)))==3) and chr(x) or '.' \
-                for x in xrange(256)])
+                for x in range(256)])
 
         result = list()
 
-        for i in xrange(0, len(src), length):
+        for i in range(0, len(src), length):
             s           = src[i : i + length]
             hexa        = " ".join(["%02X" % ord(x) for x in s])
             printable   = s.translate(FILTER)
@@ -228,28 +230,28 @@ class DumpSectionContentAction(BfdActionWithFileParam):
         # Iterate through every section present.
         #
         for section in self.bfd.sections:
-            print "Contents of section %s:" % section.name
+            print("Contents of section %s:" % section.name)
             content = section.content
             start = section.vma
-            print self.dump(content, length=16, start=start)
+            print(self.dump(content, length=16, start=start))
 
 
 class DumpFileSymbols(BfdActionWithFileParam):
     """Disassemble section content on the user-specified bfd(s)."""
 
     def do_action(self, parser, namespace, values, option_string):
-        print "SYMBOL TABLE:"
+        print("SYMBOL TABLE:")
         for symbol_address in self.bfd.symbols:
             symbol = self.bfd.symbols[symbol_address]
-            print "%08x %15s %15s %08x %s" % \
+            print("%08x %15s %15s %08x %s" % \
                 (symbol_address,
                 symbol.section.name,
                 symbol.name,
                 symbol.value,
                 ", ".join(
                     [name for flag, name in \
-                        SYMBOL_FLAGS_NAMES_SHORT.iteritems() \
-                        if flag in symbol.flags] ))
+                        six.iteritems(SYMBOL_FLAGS_NAMES_SHORT) \
+                        if flag in symbol.flags] )))
 
 def init_parser():
     """Initialize option parser."""

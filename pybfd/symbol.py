@@ -6,7 +6,7 @@
 
 from collections import namedtuple
 
-from bfd_base import BfdException
+from .bfd_base import BfdException
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"

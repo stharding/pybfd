@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 # Copyright (c) 2013 Groundworks Technologies
 # 
@@ -9,7 +9,7 @@ import sys
 import os
 import re
 import subprocess
-from StringIO import StringIO
+import io
 
 __all__ = [ "generate_supported_disassembler_header",
             "generate_supported_architectures_source",
@@ -262,7 +262,7 @@ def get_supported_architectures(path_to_nm, path_to_libopcodes, supported_machin
 
     # Buffer the output.
     syms_found = set()
-    output = StringIO(stdout)
+    output = io.StringIO(stdout.decode('utf-8'))
 
     for line in output.getvalue().split("\n"):
         m = sym_expr.search( line )

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 # Copyright (c) 2013 Groundworks Technologies
 # 
@@ -6,7 +6,8 @@
 #
 
 from sys import argv, exit
-from types import FileType, StringType, IntType
+import io
+import logging
 from os import dup
 from os.path import islink
 from traceback import print_exc, print_stack
@@ -34,10 +35,10 @@ else:
     import _bfd
 del version_info
 
-from bfd_archs import *
-from section import *
-from symbol import *
-from bfd_base import *
+from .bfd_archs import *
+from .section import *
+from .symbol import *
+from .bfd_base import *
 
 __author__ = "Groundworks Technologies OSS Team"
 __contact__ = "oss@groundworkstech.com"
@@ -132,7 +133,7 @@ class Bfd(object):
         #
         # Determine if the user passed a file-descriptor or a _file and
         # proceed accordingly.
-        if type(_file) is FileType:
+        if type(_file) is io.StringIO:
             # The user specified a file descriptor.
             filename = _file.name
 
@@ -141,11 +142,11 @@ class Bfd(object):
                     
             try:
                 self._ptr = _bfd.fdopenr(filename, target, dup(_file.fileno()))
-            except Exception, err:
+            except Exception as err:
                 raise BfdException(
                     "Unable to open file-descriptor %s : %s" % (filename, err))
 
-        elif type(_file) is StringType:
+        elif type(_file) is str:
             # The user spcified a filaname so first check if file exists.
             filename = _file
             try:
@@ -158,11 +159,11 @@ class Bfd(object):
             #
             try:
                 self._ptr = _bfd.openr(filename, target)
-            except (TypeError, IOError), err:
+            except (TypeError, IOError) as err:
                 raise BfdException(
                     "Unable to open file %s : %s" % (filename, err))
 
-        elif type(_file) is IntType:
+        elif type(_file) is int:
             # The user specified an already-open BFD pointer so we avoid any
             # further open operation and move on to file format recognition.
             self._ptr = _file
@@ -200,7 +201,7 @@ class Bfd(object):
                     pass
                     raise BfdException(_bfd.get_last_error_message())
 
-        except TypeError, err:
+        except TypeError as err:
             raise BfdException(
                 "Unable to initialize file format : %s" % err)
 
@@ -220,7 +221,7 @@ class Bfd(object):
         for _ptr in _bfd.archive_list_files(self._ptr):
             try:
                 self.archive_files.append(Bfd(_ptr))
-            except BfdException, err:
+            except BfdException as err:
                 #print "Error populating archive file list : %s" % err
                 #print_exc()
                 pass
@@ -240,7 +241,7 @@ class Bfd(object):
         """Return the list of files inside an archive file."""
         try:
             return _bfd.archive_list_filenames(self._ptr)
-        except TypeError, err:
+        except TypeError as err:
             raise BfdException(err)
 
     @property
@@ -273,7 +274,7 @@ class Bfd(object):
         """Return the current format name of the open bdf."""
         try:
             return BfdFormatNamesLong[self.file_format]
-        except IndexError, err:
+        except IndexError as err:
             raise BfdException("Invalid format specified (%d)" % self.file_format)
 
     @property
@@ -297,6 +298,7 @@ class Bfd(object):
         internal list.
 
         """
+        logging.debug("Starting to populate sections")
         if not self._ptr:
             raise BfdException("BFD not initialized")
 
@@ -304,7 +306,7 @@ class Bfd(object):
             try:
                 bfd_section = BfdSection(self._ptr, section)
                 self._sections[bfd_section.name] = bfd_section
-            except BfdSectionException, err:
+            except BfdSectionException as err:
                 #print "Exception during section pasing : %s" % err
                 pass
 
@@ -358,7 +360,7 @@ class Bfd(object):
                 self._symbols[symbol_address] = new_symbol
 
             del sections
-        except BfdSectionException, err:
+        except BfdSectionException as err:
             raise BfdException("Exception on symbolic ifnormation parsing.")
 
     def close(self):
@@ -373,7 +375,7 @@ class Bfd(object):
 
             try:
                 _bfd.close(self._ptr)
-            except TypeError, err:
+            except TypeError as err:
                 raise BfdException("Unable to close bfd (%s)" % err)
             finally:
                 self._ptr = None
@@ -701,7 +703,7 @@ class Bfd(object):
 
         try:
             return _bfd.get_arch_size(self._ptr)
-        except Exception, err:
+        except Exception as err:
             raise BfdException("Unable to determine architeure size.")
 
     def flag_name_shost(self, flag):
@@ -728,13 +730,13 @@ class Bfd(object):
 
 def main():
 
-    print "%s %s - %s (C) %s\n" % (__title__, __version__, __company__, __year__)
+    print("%s %s - %s (C) %s\n" % (__title__, __version__, __company__, __year__))
 
     # Import the disassembly library (libopcodes)
-    from opcodes import Opcodes, OpcodesException
+    from .opcodes import Opcodes, OpcodesException
 
     if len(argv) == 1:
-        print "Usage : %s <filename>" % argv[0]
+        print("Usage : %s <filename>" % argv[0])
         return
 
     bfd = None
@@ -745,24 +747,24 @@ def main():
         # We can either pass a filename or a file descriptor and they will be used
         # in the same way.
         #
-        print "[+] Creating BFD instance..."
+        print("[+] Creating BFD instance...")
         #fd = open(argv[1], "r")
         bfd = Bfd(argv[1])
 
         # Print the file format and in case that its an archive then just show
         # its files and leave.
-        print "[+] File format     : %s" % bfd.file_format_name
+        print("[+] File format     : %s" % bfd.file_format_name)
 
         if bfd.is_archive:
-            print "[-] List of internal files:"
+            print("[-] List of internal files:")
             #for inner_filename in bfd.archive_filenames:
             #    print "\t%s" % inner_filename
 
             for inner_bfd in bfd.archive_files:
-                print "\t%-40s - sections : %d - symbols : %s" % \
+                print("\t%-40s - sections : %d - symbols : %s" % \
                     (inner_bfd.filename,
                     len(inner_bfd.sections),
-                    len(inner_bfd.symbols))
+                    len(inner_bfd.symbols)))
 
             # The bfd.close() is executed bellow in the finally clause.
             return
@@ -770,11 +772,11 @@ def main():
         #
         # Display some information about the currently open file.
         #
-        print "[+] Architecture    : %s (%d)" % \
-            (bfd.architecture_name, bfd.architecture)
-        print "[+] BFD target name : %s" % bfd.target
-        print "[+] Entry point     : 0x%X" % bfd.start_address
-        print "[+] Sections        : %d" % len(bfd.sections)
+        print("[+] Architecture    : %s (%d)" % \
+            (bfd.architecture_name, bfd.architecture))
+        print("[+] BFD target name : %s" % bfd.target)
+        print("[+] Entry point     : 0x%X" % bfd.start_address)
+        print("[+] Sections        : %d" % len(bfd.sections))
         #print "\n".join([str(s) for s in bfd.sections])
 
         #
@@ -783,16 +785,16 @@ def main():
         section_name = ".text"
         section = bfd.sections.get(section_name)
         if not section:
-            print "[-] No section \'%s\' available." % section_name
+            print("[-] No section \'%s\' available." % section_name)
             return
 
         #
         # Display its name (we get it from the section instance) and its index
         # inside the binary file.
         #
-        print "[+] Selected section information:"
-        print "\tName   : %s" % section.name
-        print "\tIndex  : %d" % section.index
+        print("[+] Selected section information:")
+        print("\tName   : %s" % section.name)
+        print("\tIndex  : %d" % section.index)
 
         # Dump the section content to a buffer
         content = section.content
@@ -806,7 +808,7 @@ def main():
         else:
             length_unit = "Kbytes"
 
-        print "\tLength : %(length)d %(length_unit)s" % vars()
+        print("\tLength : %(length)d %(length_unit)s" % vars())
 
         #
         # At this point we'll disassemble the entire section content. We'll obtain
@@ -823,17 +825,17 @@ def main():
             # information from the current section content.
             opcodes.start_smart_disassemble(0, opcodes.print_single_instruction_callback)
 
-        except OpcodesException, err:
-            print "[-] Opcodes exception : %s" % err
+        except OpcodesException as err:
+            print("[-] Opcodes exception : %s" % err)
 
         #for vma, size, disasm in opcodes.disassemble(content, bfd.start_address):
         #    print "0x%X (%d)\t %s" % (vma, size, disasm)
         #    print disasm, opcodes.build_instruction(vma, size, disasm)
         #    pass
 
-    except BfdException, err:
+    except BfdException as err:
         #print_exc()
-        print "Error : %s" % err
+        print("Error : %s" % err)
 
     finally:
         if bfd:
@@ -843,7 +845,7 @@ def main():
                 # Release inner BFD files in case we're an archive BFD.
                 if bfd.is_archive:
                     [inner_bfd.close() for inner_bfd in bfd.archive_files]
-            except TypeError, err:
+            except TypeError as err:
                 pass
 
             # Release the current BFD and leave. 
@@ -852,6 +854,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception, err:
+    except Exception as err:
         #print_exc()
-        print "Exception : %s" % err
+        print("Exception : %s" % err)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 # Copyright (c) 2013 Groundworks Technologies
 # 
@@ -63,6 +63,17 @@ class InstallCustomCommandLine( install ):
 
 class CustomBuildExtension( build_ext ):
     PLATFORMS = {
+        "linux": {
+            "libs": [
+                "/usr/lib"
+            ],
+            "includes": [
+                "/usr/include"
+            ],
+            "possible-lib-ext": [
+                ".so",
+            ]
+        },
         "linux2": {
             "libs": [
                 "/usr/lib"
@@ -130,13 +141,13 @@ class CustomBuildExtension( build_ext ):
 
         # first, search for multiarch files.
         # check if we found more than one version of the multiarch libs.
-        multiarch_libs = dict( [(v,_l) for v, _l in libs.items() \
+        multiarch_libs = dict( [(v,_l) for v, _l in list(libs.items()) \
             if v.find("multiarch") != -1 ] )
         if len(multiarch_libs) > 1:
-        	print "[W] Multiple binutils versions detected. Trying to build with default..."
-            	return multiarch_libs.values()[0]
+                print("[W] Multiple binutils versions detected. Trying to build with default...")
+                return list(multiarch_libs.values())[0]
         if len(multiarch_libs) == 1:
-            return multiarch_libs.values()[0]
+            return list(multiarch_libs.values())[0]
         # or use the default libs, or .. none 
         return libs.get("",[])
 
@@ -171,7 +182,7 @@ class CustomBuildExtension( build_ext ):
 
         libopcodes = [os.path.join(libs_dir,lib) \
             for lib in libs if lib.startswith("libopcodes")][0]
-        print "[+] Detecting libbfd/libopcodes compiled architectures"
+        print("[+] Detecting libbfd/libopcodes compiled architectures")
 
         if self.with_static_binutils: # use the nm from the binutils distro
         
@@ -203,11 +214,11 @@ class CustomBuildExtension( build_ext ):
             self.with_static_binutils == None)
 
         source_bfd_archs_c = generate_supported_architectures_source(supported_archs, supported_machines)
-        print "[+] Generating .C files..."
+        print("[+] Generating .C files...")
         gen_file = os.path.join(PACKAGE_DIR, "gen_bfd_archs.c")
         with open(gen_file, "w+") as fd:
             fd.write(source_bfd_archs_c)
-        print "[+]   %s" % gen_file
+        print("[+]   %s" % gen_file)
 
         if self.with_static_binutils:
            link_to_libs = [] # ...
@@ -232,7 +243,7 @@ class CustomBuildExtension( build_ext ):
                     gen_tool,
                     gen_file  )
 
-        print "[+] Generating .py files..."
+        print("[+] Generating .py files...")
         # generate C dependent definitions
         os.system( cmd )
         # generate python specific data
@@ -244,7 +255,7 @@ class CustomBuildExtension( build_ext ):
             os.unlink(obj)
         os.unlink(gen_tool)
 
-        print "[+]   %s" % gen_file
+        print("[+]   %s" % gen_file)
 
         #
         # Step 3 . Generate header file to be used by the PyBFD extension
@@ -256,11 +267,11 @@ class CustomBuildExtension( build_ext ):
             raise Exception("Unable to determine libopcodes' supported " \
                 "platforms from '%s'" % libopcodes)
 
-        print "[+] Generating .h files..."
+        print("[+] Generating .h files...")
         gen_file = os.path.join(PACKAGE_DIR, "supported_disasm.h")
         with open(gen_file, "w+") as fd:
             fd.write(gen_source)
-        print "[+]   %s" % gen_file
+        print("[+]   %s" % gen_file)
 
         return supported_archs
 
@@ -286,8 +297,8 @@ class CustomBuildExtension( build_ext ):
             raise Exception("unsupported platform: %s" % sys.platform)
 
         if self.with_static_binutils: # the user has specified a custom binutils distro.
-            print "[+] Using specific binutils static distribution"
-            print "[+]   %s" % self.with_static_binutils
+            print("[+] Using specific binutils static distribution")
+            print("[+]   %s" % self.with_static_binutils)
             self.platform["libs"] = [os.path.join( self.with_static_binutils, "lib"),]
             self.platform["includes"] = [os.path.join( self.with_static_binutils, "include"),]
             self.platform["possible-lib-ext"] = [".a",] # for all unix platforms.
@@ -300,15 +311,15 @@ class CustomBuildExtension( build_ext ):
         if self.includes == None:
             raise Exception("unable to determine correct include path for bfd.h / dis-asm.h")
 
-        print "[+] Using binutils headers at:"
-        print "[+]   %s" % self.includes
+        print("[+] Using binutils headers at:")
+        print("[+]   %s" % self.includes)
 
         # we'll use this include path for building.
         ext_includes = [self.includes, ]
 
         # Try to guess libopcodes / libbfd libs.
         libs_dirs = self.platform["libs"]
-        print "[+] Searching binutils libraries..."
+        print("[+] Searching binutils libraries...")
         for libdir in libs_dirs:
             for possible_lib_ext in self.platform["possible-lib-ext"]:
                 libs = self.find_binutils_libs(libdir, possible_lib_ext)
@@ -320,7 +331,7 @@ class CustomBuildExtension( build_ext ):
             raise Exception("unable to find binutils libraries.")
 
         for lib in self.libs[1]:
-            print "[+]   %s" % os.path.join(self.libs[0], lib)
+            print("[+]   %s" % os.path.join(self.libs[0], lib))
         #
         # check for libopcodes / libbfd
         #
@@ -421,7 +432,8 @@ def main():
                 "Operating System :: POSIX",
                 "Programming Language :: C",
                 "Programming Language :: Assembly",
-                "Programming Language :: Python :: 2 :: Only",
+                "Programming Language :: Python :: 2",
+                "Programming Language :: Python :: 3",
                 "Topic :: Security",
                 "Topic :: Software Development :: Disassemblers",
                 "Topic :: Software Development :: Compilers",
@@ -434,15 +446,15 @@ def main():
         
         global final_supported_archs
         if final_supported_archs:
-           print "\n[+] %s %s / Supported architectures:" % (MODULE_NAME, __version__)
+           print("\n[+] %s %s / Supported architectures:" % (MODULE_NAME, __version__))
            for arch, _, _, comment in final_supported_archs:
-               print "\t%-20s : %s" % (arch, comment)
+               print("\t%-20s : %s" % (arch, comment))
 
-    except Exception, err:
+    except Exception as err:
         global debug
         if debug:
             print_exc()
-        print "[-] Error : %s" % err
+        print("[-] Error : %s" % err)
 
 if __name__ == "__main__":
     main()

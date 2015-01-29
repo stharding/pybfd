@@ -4,7 +4,9 @@
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
-from bfd_archs import *
+from .bfd_archs import *
+from six.moves import range
+from six.moves import zip
 
 
 class BfdFormat:
@@ -224,7 +226,7 @@ INSTRUCTION_ATTRIBUTES = (
 )
 
 def enum(*sequential, **named):
-    enums = dict(zip(sequential, range(len(sequential))), **named)
+    enums = dict(list(zip(sequential, list(range(len(sequential))))), **named)
     return type('Enum', (), enums)
 
 
