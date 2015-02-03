@@ -1,10 +1,10 @@
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
-from .bfd_archs import *
+from bfd_archs import *
 from six.moves import range
 from six.moves import zip
 

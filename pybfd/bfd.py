@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
@@ -35,10 +35,10 @@ else:
     import _bfd
 del version_info
 
-from .bfd_archs import *
-from .section import *
-from .symbol import *
-from .bfd_base import *
+from bfd_archs import *
+from section import *
+from symbol import *
+from bfd_base import *
 
 __author__ = "Groundworks Technologies OSS Team"
 __contact__ = "oss@groundworkstech.com"
@@ -80,7 +80,7 @@ class Bfd(object):
     """
     Main BFD wrapper class. This class allows the user to handle a BFD object
     (open a file to get its symbols, read resction content, etc..
-    
+
     """
 
     DEFAULT_TARGET = "default"
@@ -125,7 +125,7 @@ class Bfd(object):
 
         @return : None
         """
-        # Close any existing BFD structure instance. 
+        # Close any existing BFD structure instance.
         self.close()
 
         #
@@ -139,7 +139,7 @@ class Bfd(object):
 
             if islink(filename):
                 raise BfdException("Symlinks file-descriptors are not valid")
-                    
+
             try:
                 self._ptr = _bfd.fdopenr(filename, target, dup(_file.fileno()))
             except Exception as err:
@@ -461,7 +461,7 @@ class Bfd(object):
         if self.big_endian:
             return ENDIAN_BIG
         elif self.little_endian:
-            return ENDIAN_LITTLE        
+            return ENDIAN_LITTLE
         return ENDIAN_UNKNOWN
 
     @property
@@ -498,7 +498,7 @@ class Bfd(object):
     def header_little_endian(self):
         """Return the header_little_endian attribute of the BFD file being
         processed.
-        
+
         """
         if not self._ptr:
             raise BfdException("BFD not initialized")
@@ -602,7 +602,7 @@ class Bfd(object):
     def start_address(self, _start_address):
         """Store the new start address attribute of the BFD file being
         processed.
-        
+
         """
         if not self._ptr:
             raise BfdException("BFD not initialized")
@@ -621,7 +621,7 @@ class Bfd(object):
     def gp_size(self, _gp_size):
         """Store the new start address attribute of the BFD file being
         processed.
-        
+
         """
         if not self._ptr:
             raise BfdException("BFD not initialized")
@@ -661,7 +661,7 @@ class Bfd(object):
     def dynamic_symbols_count(self):
         """Return the dynamic symbols count attribute of the BFD file being
         processed.
-        
+
         """
         if not self._ptr:
             raise BfdException("BFD not initialized")
@@ -673,7 +673,7 @@ class Bfd(object):
     def symbol_leading_char(self):
         """Return the symbol leading char attribute of the BFD file being
         processed.
-        
+
         """
         if not self._ptr:
             raise BfdException("BFD not initialized")
@@ -848,7 +848,7 @@ def main():
             except TypeError as err:
                 pass
 
-            # Release the current BFD and leave. 
+            # Release the current BFD and leave.
             bfd.close()
 
 if __name__ == "__main__":

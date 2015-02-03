@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
@@ -32,7 +32,7 @@ else:
 del version_info
 
 from bfd_archs import *
-from .bfd_base import *
+from bfd_base import *
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"
@@ -70,7 +70,7 @@ class Opcodes(object):
 
         # Determine if the specified paramter is a BFD or a tuple specifying
         # arch/machine/endian.
-        try:            
+        try:
             # FIXME: why we don't use isintance?
             if args[0].__class__.__name__ == "Bfd":
                 self.initialize_bfd(args[0])
@@ -83,7 +83,7 @@ class Opcodes(object):
 
     def initialize_bfd(self, abfd):
         """Initialize underlying libOpcodes library using BFD."""
-        self._ptr = _opcodes.initialize_bfd(abfd._ptr)              
+        self._ptr = _opcodes.initialize_bfd(abfd._ptr)
 
         # Already done inside opcodes.c
         #self.architecture = abfd.architecture
@@ -114,7 +114,7 @@ class Opcodes(object):
         """
         Set the binary buffer to disassemble with other related information
         ready for an instruction by instruction disassembly session.
-        
+
         """
         _opcodes.initialize_smart_disassemble(
             self._ptr, data, start_address)
@@ -132,7 +132,7 @@ class Opcodes(object):
         insn_type, target, target2, disassembly):
         """
         Callack on each disassembled instruction to print its information.
-        
+
         """
         print("0x%X SZ=%d BD=%d IT=%d\t%s" % \
             (address, size, branch_delay_insn, insn_type, disassembly))
@@ -143,7 +143,7 @@ class Opcodes(object):
         """
         Return a list containing the virtual memory address, instruction length
         and disassembly code for the given binary buffer.
-        
+
         """
         return _opcodes.disassemble(self._ptr, data, start_address)
 
@@ -185,7 +185,7 @@ class Opcodes(object):
 
 def main():
     """Test case for simple opcode disassembly."""
-    test_targets = (    
+    test_targets = (
         [ARCH_I386, MACH_I386_I386_INTEL_SYNTAX, ENDIAN_MONO, "\x55\x89\xe5\xE8\xB8\xFF\xFF\xFF", 0x1000],
         [ARCH_I386, MACH_X86_64_INTEL_SYNTAX, ENDIAN_MONO, "\x55\x48\x89\xe5\xE8\xA3\xFF\xFF\xFF", 0x1000],
         [ARCH_ARM, MACH_ARM_2, ENDIAN_LITTLE, "\x04\xe0\x2d\xe5\xED\xFF\xFF\xEB", 0x1000],

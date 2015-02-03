@@ -479,7 +479,7 @@ start_smart_disassemble(disassembler_pointer* pdisasm_ptr, unsigned long offset,
             return -1;
         }
 
-        callback_result = PyInt_AS_LONG(py_result);
+        callback_result = PyLong_AsLong(py_result);
 
         if (callback_result != PYBFD_DISASM_CONTINUE)
             break;
@@ -1017,6 +1017,20 @@ static struct PyMethodDef _opcodes_methods[] =
 #undef declmethod
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef _opcodes_module = {
+	PyModuleDef_HEAD_INIT,
+	"_opcodes",				/* m_name */
+	"The binding for libBFD from binutils",	/* m_doc */
+	-1,					/* m_size */
+	_opcodes_methods,			/* m_methods */
+	NULL,					/* m_reload */
+	NULL,					/* m_traverse */
+	NULL,					/* m_clear */
+	NULL,					/* m_free */
+};
+#endif
+
 //
 // Name     : init_opcodes
 //
@@ -1026,10 +1040,30 @@ static struct PyMethodDef _opcodes_methods[] =
 //
 // Returns  : -
 //
-PyMODINIT_FUNC init_opcodes(void)
-{
-    if (!Py_InitModule("_opcodes", _opcodes_methods))
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit__opcodes(void) {
+#else
+init_opcodes(void) {
+#endif
+    PyObject *module = NULL;
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&_opcodes_module);
+#else
+    module = Py_InitModule("_opcodes", _opcodes_methods);
+#endif
+    if (!module)
+    {
+#if PY_MAJOR_VERSION >= 3
+        return NULL;
+#else
         return;
+#endif
+    }
 
-    // Add additional initialization here.
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#else
+    return;
+#endif
 }

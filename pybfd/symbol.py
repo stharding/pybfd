@@ -1,12 +1,12 @@
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
 from collections import namedtuple
 
-from .bfd_base import BfdException
+from bfd_base import BfdException
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"

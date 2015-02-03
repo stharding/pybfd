@@ -1331,7 +1331,7 @@ static struct PyModuleDef _bfd_module = {
 //
 // Returns  : -
 //
-PyMODINIT_FUNC 
+PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
 PyInit__bfd(void) {
 #else
