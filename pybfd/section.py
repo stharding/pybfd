@@ -1,10 +1,11 @@
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part Python pybfd module (libbfd extension module)
 #
 
-from .bfd_base import BfdException, enum
+from bfd_base import BfdException, enum
+import _bfd
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"
