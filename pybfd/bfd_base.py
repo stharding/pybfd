@@ -4,7 +4,7 @@
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
-from bfd_archs import *
+from pybfd.bfd_archs import *
 from six.moves import range
 from six.moves import zip
 

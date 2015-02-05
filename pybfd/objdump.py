@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part Python pybfd module (libbfd & libopcodes extension module)
 #
 
@@ -9,12 +9,12 @@ from sys import argv, exit
 from argparse import ArgumentParser, FileType, REMAINDER, Action
 from textwrap import dedent
 
-from . import bfd
-from bfd_archs import *
-from .bfd_base import *
-from .opcodes import *
-from .section import *
-from .symbol import SYMBOL_FLAGS_NAMES_SHORT
+from pybfb import bfd
+from pybfd.bfd_archs import *
+from pybfd.bfd_base import *
+from pybfd.opcodes import *
+from pybfd.section import *
+from pybfd.symbol import SYMBOL_FLAGS_NAMES_SHORT
 import six
 from six.moves import range
 
