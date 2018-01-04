@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# 
+#
 # Copyright (c) 2013 Groundworks Technologies
-# 
+#
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
@@ -11,10 +11,12 @@ import re
 import subprocess
 import io
 
-__all__ = [ "generate_supported_disassembler_header",
-            "generate_supported_architectures_source",
-            "get_supported_architectures",
-            "get_supported_machines"]
+__all__ = [
+    "generate_supported_disassembler_header",
+    "generate_supported_architectures_source",
+    "get_supported_architectures",
+    "get_supported_machines"
+]
 
 known_archs = [
   #BFD_ARCH,            BFD_LITTLE_ENDIAN,          BFD_BIG_ENDIAN,             DESCRIPTION
@@ -80,7 +82,7 @@ known_archs = [
   ("bfd_arch_mmix",     "print_insn_mmix",          "print_insn_mmix",          "Donald Knuth educational processor."),
   ("bfd_arch_xstormy16","print_insn_xstormy16",     "print_insn_xstormy16",     "XStormy16"),
   ("bfd_arch_msp430",   "print_insn_msp430",        "print_insn_msp430",        "Texas Instruments MSP430 architecture."),
-  ("bfd_arch_xc16x",    "print_insn_xc16x",         "print_insn_xc16x",         "Infineon XC16X Series."),               
+  ("bfd_arch_xc16x",    "print_insn_xc16x",         "print_insn_xc16x",         "Infineon XC16X Series."),
   ("bfd_arch_xtensa",   "print_insn_xtensa",        "print_insn_xtensa",        "Tensilica Xtensa cores."),
   ("bfd_arch_z80",      "print_insn_z80",           "print_insn_z80",           "Zilog Z80"),
   ("bfd_arch_lm32",     "print_insn_lm32",          "print_insn_lm32",          "Lattice Mico32"),
@@ -256,7 +258,7 @@ def get_supported_architectures(path_to_nm, path_to_libopcodes, supported_machin
     p.wait()
 
     sym_expr = re.compile("\sT\s(?:_?)(print_insn_.*)")
-    
+
     bigs = dict( [(big,arch) for arch, big, little, comment in known_archs] )
     littles = dict( [(little,arch) for arch, big, little, comment in known_archs] )
 
@@ -325,7 +327,7 @@ def gen_supported_archs( supported_archs ):
         supported_arch_entries.append( bfd_supported_archs_entry % arch[4:].upper() )
     return bfd_supported_archs % ( "\n".join( archs_names ), "\n".join( supported_arch_entries ) )
 
-        
-        
+
+
 
 

@@ -4,16 +4,16 @@
 # This code is part PyBFD module (libbfd & libopcodes extension module)
 #
 
-from pybfd.bfd_archs import *
+from .bfd_archs import *
 from six.moves import range
 from six.moves import zip
 
 
 class BfdFormat:
-  UNKNOWN = 0   # File format is unknown.
-  OBJECT = 1    # Linker/assembler/compiler output.
-  ARCHIVE = 2   # Object archive file
-  CORE = 3      # Core dump.
+    UNKNOWN = 0   # File format is unknown.
+    OBJECT = 1    # Linker/assembler/compiler output.
+    ARCHIVE = 2   # Object archive file
+    CORE = 3      # Core dump.
 
 
 BfdFormatNamesLong = {
@@ -25,27 +25,27 @@ BfdFormatNamesLong = {
 
 
 class BfdError:
-  NO_ERROR = 0,
-  SYSTEM_CALL = 1
-  INVALID_TARGET = 2
-  WRONG_FORMAT = 3
-  WRONG_OBJECT_FORMAT = 4
-  INVALID_OPERATION = 5
-  NO_MEMORY = 6
-  NO_SYMBOLS = 7
-  NO_ARMAP = 8
-  NO_MORE_ARCHIVED_FILES = 9
-  MALFORMED_ARCHIVE = 10
-  FILE_NOT_RECOGNIZED = 11
-  FILE_AMBIGUOUSLY_RECOGNIZED = 12
-  NO_CONTENTS = 13
-  NONREPRESENTABLE_SECTION = 14
-  NO_DEBUG_SECTION = 15
-  BAD_VALUE = 16
-  FILE_TRUNCATED = 17
-  FILE_TOO_BIG = 18
-  ON_INPUT = 19
-  INVALID_ERROR_COD = 20
+    NO_ERROR = 0,
+    SYSTEM_CALL = 1
+    INVALID_TARGET = 2
+    WRONG_FORMAT = 3
+    WRONG_OBJECT_FORMAT = 4
+    INVALID_OPERATION = 5
+    NO_MEMORY = 6
+    NO_SYMBOLS = 7
+    NO_ARMAP = 8
+    NO_MORE_ARCHIVED_FILES = 9
+    MALFORMED_ARCHIVE = 10
+    FILE_NOT_RECOGNIZED = 11
+    FILE_AMBIGUOUSLY_RECOGNIZED = 12
+    NO_CONTENTS = 13
+    NONREPRESENTABLE_SECTION = 14
+    NO_DEBUG_SECTION = 15
+    BAD_VALUE = 16
+    FILE_TRUNCATED = 17
+    FILE_TOO_BIG = 18
+    ON_INPUT = 19
+    INVALID_ERROR_COD = 20
 
 
 class BfdFlags:
@@ -122,13 +122,16 @@ class BfdFlags:
     BFD_PLUGIN = 0x20000
 
     # Flags bits to be saved in bfd_preserve_save.
-    BFD_FLAGS_SAVED  = \
-      BFD_IN_MEMORY | BFD_COMPRESS | BFD_DECOMPRESS | BFD_PLUGIN
+    BFD_FLAGS_SAVED  = (
+        BFD_IN_MEMORY | BFD_COMPRESS | BFD_DECOMPRESS | BFD_PLUGIN
+    )
 
     # Flags bits which are for BFD use only.
-    BFD_FLAGS_FOR_BFD_USE_MASK  = \
-      BFD_IN_MEMORY | BFD_COMPRESS | BFD_DECOMPRESS | BFD_LINKER_CREATED \
-       | BFD_PLUGIN | BFD_TRADITIONAL_FORMAT | BFD_DETERMINISTIC_OUTPUT
+    BFD_FLAGS_FOR_BFD_USE_MASK = (
+        BFD_IN_MEMORY | BFD_COMPRESS | BFD_DECOMPRESS | BFD_LINKER_CREATED |
+        BFD_PLUGIN | BFD_TRADITIONAL_FORMAT | BFD_DETERMINISTIC_OUTPUT
+    )
+
 
 BFD_FLAGS_LIST = (
     BfdFlags.BFD_NO_FLAGS,
@@ -152,7 +155,7 @@ BFD_FLAGS_LIST = (
     BfdFlags.BFD_PLUGIN,
     BfdFlags.BFD_FLAGS_SAVED,
     BfdFlags.BFD_FLAGS_FOR_BFD_USE_MASK,
-    )
+)
 
 BFD_FLAGS_NAMES_SHORT = {
     BfdFlags.BFD_NO_FLAGS : "BFD_NO_FLAGS",
@@ -176,34 +179,34 @@ BFD_FLAGS_NAMES_SHORT = {
     BfdFlags.BFD_PLUGIN : "BFD_PLUGIN",
     BfdFlags.BFD_FLAGS_SAVED : "BFD_FLAGS_SAVED",
     BfdFlags.BFD_FLAGS_FOR_BFD_USE_MASK : "BFD_FLAGS_FOR_BFD_USE_MASK",
-    }
+}
 
 SUPPORTED_ENDIAN = [
     ENDIAN_BIG,
     ENDIAN_LITTLE,
     ENDIAN_UNKNOWN,
-    ]
+]
 
 #
 # Instruction attributes
 #
-IA_STOP = 0x00001 #  Instruction doesn't pass execution to the next instruction
-IA_CALL = 0x00002 #  CALL instruction (should make a procedure here)
-IA_CHG1 = 0x00004 #  The instruction modifies the first operand
-IA_CHG2 = 0x00008 #  The instruction modifies the second operand
-IA_CHG3 = 0x00010 #  The instruction modifies the third operand
-IA_CHG4 = 0x00020 #  The instruction modifies 4 operand
-IA_CHG5 = 0x00040 #  The instruction modifies 5 operand
-IA_CHG6 = 0x00080 #  The instruction modifies 6 operand
-IA_USE1 = 0x00100 #  The instruction uses value of the first operand
-IA_USE2 = 0x00200 #  The instruction uses value of the second operand
-IA_USE3 = 0x00400 #  The instruction uses value of the third operand
-IA_USE4 = 0x00800 #  The instruction uses value of the 4 operand
-IA_USE5 = 0x01000 #  The instruction uses value of the 5 operand
-IA_USE6 = 0x02000 #  The instruction uses value of the 6 operand
-IA_JUMP = 0x04000 #  The instruction passes execution using indirect jump or call (thus needs additional analysis)
-IA_SHFT = 0x08000 #  Bit-shift instruction (shl,shr...)
-IA_HLL  = 0x10000 #  Instruction may be present in a high level language function.
+IA_STOP = 0x00001  # Instruction doesn't pass execution to the next instruction
+IA_CALL = 0x00002  # CALL instruction (should make a procedure here)
+IA_CHG1 = 0x00004  # The instruction modifies the first operand
+IA_CHG2 = 0x00008  # The instruction modifies the second operand
+IA_CHG3 = 0x00010  # The instruction modifies the third operand
+IA_CHG4 = 0x00020  # The instruction modifies 4 operand
+IA_CHG5 = 0x00040  # The instruction modifies 5 operand
+IA_CHG6 = 0x00080  # The instruction modifies 6 operand
+IA_USE1 = 0x00100  # The instruction uses value of the first operand
+IA_USE2 = 0x00200  # The instruction uses value of the second operand
+IA_USE3 = 0x00400  # The instruction uses value of the third operand
+IA_USE4 = 0x00800  # The instruction uses value of the 4 operand
+IA_USE5 = 0x01000  # The instruction uses value of the 5 operand
+IA_USE6 = 0x02000  # The instruction uses value of the 6 operand
+IA_JUMP = 0x04000  # The instruction passes execution using indirect jump or call (thus needs additional analysis)
+IA_SHFT = 0x08000  # Bit-shift instruction (shl,shr...)
+IA_HLL  = 0x10000  # Instruction may be present in a high level language function.
 
 INSTRUCTION_ATTRIBUTES = (
     IA_STOP,
@@ -225,6 +228,7 @@ INSTRUCTION_ATTRIBUTES = (
     IA_HLL
 )
 
+
 def enum(*sequential, **named):
     enums = dict(list(zip(sequential, list(range(len(sequential))))), **named)
     return type('Enum', (), enums)
@@ -233,6 +237,7 @@ def enum(*sequential, **named):
 class BfdException(Exception):
     """Generic BFD module exception."""
     pass
+
 
 def get_architecture_name(arch_index):
     """Return the architecture name accoding to its index."""

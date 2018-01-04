@@ -31,8 +31,8 @@ else:
     import _opcodes
 del version_info
 
-from pybfd.bfd_archs import *
-from pybfd.bfd_base import *
+from .bfd_archs import *
+from .bfd_base import *
 
 __author__      = "Groundworks Technologies OSS Team"
 __contact__     = "oss@groundworkstech.com"
