@@ -56,7 +56,7 @@ get_symbols(bfd* abfd, PyObject** py_symbol_list) {
     symbol_table = (asymbol **) malloc(
         storage_needed_static + storage_needed_dynamic);
 
-    number_of_symbols_static = 
+    number_of_symbols_static =
         bfd_canonicalize_symtab(abfd, symbol_table);
 
     number_of_symbols_dynamic =
@@ -73,7 +73,7 @@ get_symbols(bfd* abfd, PyObject** py_symbol_list) {
     }
 
     for (i = 0; i < number_of_symbols_static + number_of_symbols_dynamic; i++) {
-        
+
         symbol = symbol_table[i];
 
         PyList_Append(*py_symbol_list,
@@ -98,11 +98,11 @@ get_symbols(bfd* abfd, PyObject** py_symbol_list) {
 //
 // Name     : pybfd_get_symbols
 //
-// Purpose  : 
+// Purpose  :
 //
 // Params   :
 //
-// Returns  : 
+// Returns  :
 //
 static PyObject *
 pybfd_get_symbols(PyObject *self, PyObject *args) {
@@ -308,7 +308,7 @@ pybfd_archive_list_filenames(PyObject *self, PyObject *args) {
         // items.
         if (!(list = PyList_New(0))) {
             PyErr_SetString(
-                PyExc_TypeError, 
+                PyExc_TypeError,
                 "Unable to create matches list.");
 
             return NULL;
@@ -386,7 +386,7 @@ pybfd_archive_list_files(PyObject *self, PyObject *args) {
         // items.
         if (!(list = PyList_New(0))) {
             PyErr_SetString(
-                PyExc_TypeError, 
+                PyExc_TypeError,
                 "Unable to create matches list.");
 
             return NULL;
@@ -453,7 +453,7 @@ pybfd_check_format_matches(PyObject *self, PyObject *args) {
                     // as it items.
                     if (!(list = PyList_New(0))) {
                         PyErr_SetString(
-                            PyExc_TypeError, 
+                            PyExc_TypeError,
                             "Unable to create matches list.");
 
                         return NULL;
@@ -480,7 +480,7 @@ pybfd_check_format_matches(PyObject *self, PyObject *args) {
 //
 // Purpose  : Set the internal BFD error code.
 //
-// Params   : New error code (one of bfd_error_type) 
+// Params   : New error code (one of bfd_error_type)
 //
 // Returns  : -
 //
@@ -512,7 +512,7 @@ pybfd_set_error(PyObject *self, PyObject *args) {
 //
 // Purpose  : Return the internal BFD error code.
 //
-// Params   : - 
+// Params   : -
 //
 // Returns  : A value of type bfd_error_type.
 //
@@ -569,7 +569,7 @@ pybfd_get_error_message(PyObject *self, PyObject *args) {
 //
 // Name     : pybfd_get_sections_list
 //
-// Purpose  : 
+// Purpose  :
 //
 // Params   : -
 //
@@ -667,7 +667,7 @@ pybfd_target_list(PyObject *self, PyObject *args) {
     // items.
     if (!(list = PyList_New(0))) {
         PyErr_SetString(
-            PyExc_TypeError, 
+            PyExc_TypeError,
             "Unable to create matches list.");
     }
 
@@ -1113,7 +1113,7 @@ pybfd_get_arch_size(PyObject *self, PyObject *args) {
 //
 // Name     : pybfd_find_target
 //
-// Purpose  : Find the default BFD target based on the configured target. 
+// Purpose  : Find the default BFD target based on the configured target.
 //
 // Params   :   target : String representing the target name.
 //              abfd : bfd structure.
@@ -1210,7 +1210,7 @@ pybfd_section_get_content(PyObject *self, PyObject *args) {
             if (content) {
                 if (bfd_get_section_contents(
                     abfd, section, content, offset, count)) {
-                    result = Py_BuildValue("s#", content, count);
+                    result = Py_BuildValue("y#", content, count);
                 }
 
                 free(content);
@@ -1276,7 +1276,7 @@ initialize(void) {
 //
 // Define methods
 //
-static struct PyMethodDef _bfd_methods[] = { 
+static struct PyMethodDef _bfd_methods[] = {
 #define declmethod(func,h) { #func , ( PyCFunction )pybfd_##func , METH_VARARGS , h }
     declmethod(openr, "Create a BFD for file reading."),
     declmethod(fdopenr, "Create a BFD for file reading (from file descriptor)."),
